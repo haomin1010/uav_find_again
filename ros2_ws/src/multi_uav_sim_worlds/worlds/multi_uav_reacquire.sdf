@@ -1,0 +1,84 @@
+<?xml version="1.0"?>
+<sdf version="1.7">
+  <world name="multi_uav_reacquire">
+    <physics name="default_physics" type="ignored">
+      <max_step_size>0.01</max_step_size>
+      <real_time_factor>1.0</real_time_factor>
+    </physics>
+
+    <plugin filename="ignition-gazebo-physics-system" name="ignition::gazebo::systems::Physics"/>
+    <plugin filename="ignition-gazebo-user-commands-system" name="ignition::gazebo::systems::UserCommands"/>
+    <plugin filename="ignition-gazebo-scene-broadcaster-system" name="ignition::gazebo::systems::SceneBroadcaster"/>
+
+    <light name="sun" type="directional">
+      <cast_shadows>true</cast_shadows>
+      <pose>0 0 20 0 0 0</pose>
+      <diffuse>0.9 0.9 0.85 1</diffuse>
+      <specular>0.2 0.2 0.2 1</specular>
+      <direction>-0.4 0.2 -1.0</direction>
+    </light>
+
+    <model name="ground">
+      <static>true</static>
+      <link name="ground_link">
+        <visual name="visual">
+          <geometry>
+            <box>
+              <size>62 62 0.05</size>
+            </box>
+          </geometry>
+          <material>
+            <ambient>0.72 0.76 0.70 1</ambient>
+            <diffuse>0.72 0.76 0.70 1</diffuse>
+          </material>
+        </visual>
+        <collision name="collision">
+          <geometry>
+            <box>
+              <size>62 62 0.05</size>
+            </box>
+          </geometry>
+        </collision>
+      </link>
+    </model>
+
+    <include>
+      <name>uav_1</name>
+      <uri>model://simple_uav</uri>
+      <pose>-22 -11 8 0 0 0.46</pose>
+    </include>
+    <include>
+      <name>uav_2</name>
+      <uri>model://simple_uav</uri>
+      <pose>-14 -18 8 0 0 1.57</pose>
+    </include>
+    <include>
+      <name>uav_3</name>
+      <uri>model://simple_uav</uri>
+      <pose>-5 -9 8 0 0 0.24</pose>
+    </include>
+
+    <include>
+      <name>target</name>
+      <uri>model://target_marker</uri>
+      <pose>-14 -7 0 0 0 0</pose>
+    </include>
+
+    <include>
+      <name>scripted_occluder</name>
+      <uri>model://occlusion_wall</uri>
+      <pose>0 23 1.5 0 0 0</pose>
+    </include>
+    <include>
+      <name>pillar_a</name>
+      <uri>model://occlusion_wall</uri>
+      <pose>-22.5 18.5 1.5 0 0 1.5708</pose>
+    </include>
+    <include>
+      <name>pillar_b</name>
+      <uri>model://occlusion_wall</uri>
+      <pose>22.5 -20.5 1.5 0 0 1.5708</pose>
+    </include>
+  </world>
+</sdf>
+

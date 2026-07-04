@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<sdf version="1.7">
+  <model name="occlusion_wall">
+    <static>true</static>
+    <link name="wall">
+      <visual name="visual">
+        <geometry>
+          <box>
+            <size>8.0 0.45 3.0</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.45 0.45 0.45 1</ambient>
+          <diffuse>0.45 0.45 0.45 1</diffuse>
+        </material>
+      </visual>
+      <collision name="collision">
+        <geometry>
+          <box>
+            <size>8.0 0.45 3.0</size>
+          </box>
+        </geometry>
+      </collision>
+    </link>
+  </model>
+</sdf>
+

@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<package format="3">
+  <name>multi_uav_sim_worlds</name>
+  <version>0.1.0</version>
+  <description>Gazebo Fortress worlds and simple models for the multi-UAV demo.</description>
+  <maintainer email="todo@example.com">find_object_again</maintainer>
+  <license>Apache-2.0</license>
+
+  <buildtool_depend>ament_cmake</buildtool_depend>
+
+  <export>
+    <build_type>ament_cmake</build_type>
+  </export>
+</package>
+

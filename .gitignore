@@ -1,0 +1,65 @@
+# Python bytecode/cache
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Python packaging
+*.egg-info/
+build/
+dist/
+
+# Local Python/conda environments
+.venv/
+venv/
+env/
+.env/
+.conda/
+conda-meta/
+
+# Runtime outputs
+runs/
+runs_ros2/
+*.bag
+*.db3
+*.mcap
+*.mp4
+*.avi
+*.mov
+*.csv
+*.jsonl
+
+# ROS2 / colcon outputs
+log/
+build/
+install/
+
+ros2_ws/build/
+ros2_ws/install/
+ros2_ws/log/
+
+# Gazebo / Ignition local state and logs
+.gazebo/
+.ignition/
+.gz/
+ogre.log
+server_console.log
+gui.ini
+
+# Editor / OS files
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# Local secrets/config overrides
+.env
+.env.*
+*.local

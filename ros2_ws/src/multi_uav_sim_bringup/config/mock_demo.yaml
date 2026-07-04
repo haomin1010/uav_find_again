@@ -1,0 +1,40 @@
+target_manager:
+  ros__parameters:
+    dt: 0.1
+    target_speed: 1.45
+
+uav_control:
+  ros__parameters:
+    dt: 0.1
+    uav_speed: 3.0
+    follow_radius: 9.5
+    world_half_size: 30.0
+
+vision_mock:
+  ros__parameters:
+    dt: 0.1
+    camera_range: 34.0
+    camera_fov_deg: 78.0
+    observation_noise_std: 0.45
+    dropout_probability: 0.0
+    seed: 7
+
+coop_tracker:
+  ros__parameters:
+    dt: 0.1
+    lost_frame_threshold: 8
+    recovered_frame_threshold: 6
+    observation_timeout_sec: 0.7
+    max_recovery_time_sec: 18.0
+
+sim_recorder:
+  ros__parameters:
+    dt: 0.1
+    output_dir: runs_ros2
+
+gazebo_pose_sync:
+  ros__parameters:
+    world_name: multi_uav_reacquire
+    sync_period: 0.2
+    uav_altitude: 8.0
+    timeout_ms: 100
