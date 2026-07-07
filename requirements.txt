@@ -1,4 +1,4 @@
-# Python dependencies for the non-ROS algorithm/demo utilities.
+# Minimal Python dependencies for the non-ROS algorithm/demo utilities.
 #
 # Keep ROS2 packages out of pip:
 #   rclpy, geometry_msgs, std_msgs, launch_ros, ros_gz/ros_ign
@@ -10,8 +10,5 @@
 #   pip install -r requirements.txt
 
 numpy==1.26.4
-scipy==1.11.4
-pandas==2.1.4
-PyYAML==6.0.1
 matplotlib==3.8.2
 opencv-python-headless==4.8.1.78
