@@ -79,6 +79,19 @@ runs_ros2/<timestamp>_ros2_reacquire/
 
 Gazebo 第一版使用 `gazebo_pose_sync` 节点通过 `ign service /world/multi_uav_reacquire/set_pose` 把当前 ROS2 mock 位姿同步到 Gazebo 模型。这个方案适合快速演示，后续会替换成 Gazebo 插件或标准 bridge 方式。
 
+保存 Gazebo 第一视角相机视频：
+
+```bash
+ros2 launch multi_uav_sim_bringup gazebo_camera_record.launch.py headless:=false
+```
+
+输出：
+
+```text
+runs_ros2/gazebo_camera_record/videos/
+```
+
 总体设计和开工文档见：
 
 - [docs/gazebo_multi_uav_sim_design.md](docs/gazebo_multi_uav_sim_design.md)
+- [docs/test_pipeline.md](docs/test_pipeline.md)

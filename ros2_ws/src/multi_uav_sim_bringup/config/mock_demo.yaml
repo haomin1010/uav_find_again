@@ -8,16 +8,25 @@ uav_control:
     dt: 0.1
     uav_speed: 3.0
     follow_radius: 9.5
+    orbit_radius: 1.8
+    orbit_period: 16.0
     world_half_size: 30.0
 
 vision_mock:
   ros__parameters:
     dt: 0.1
-    camera_range: 34.0
-    camera_fov_deg: 78.0
+    camera_range: 45.0
+    camera_fov_deg: 105.0
     observation_noise_std: 0.45
     dropout_probability: 0.0
     seed: 7
+    scripted_loss_uav: uav_1
+    scripted_loss_start_sec: 18.0
+    scripted_loss_end_sec: 28.0
+    enforce_support_visibility: true
+    support_uav_ids:
+      - uav_2
+      - uav_3
 
 coop_tracker:
   ros__parameters:
@@ -35,6 +44,23 @@ sim_recorder:
 gazebo_pose_sync:
   ros__parameters:
     world_name: multi_uav_reacquire
-    sync_period: 0.2
+    ign_partition: multi_uav_reacquire
+    ign_ip: 127.0.0.1
+    sync_period: 0.05
+    smoothing_time: 0.15
     uav_altitude: 8.0
-    timeout_ms: 100
+    timeout_ms: 500
+
+image_video_recorder:
+  ros__parameters:
+    output_dir: runs_ros2
+    run_name: gazebo_camera_record
+    fps: 20.0
+    image_topics:
+      - /uav_1/front_camera/image
+      - /uav_2/front_camera/image
+      - /uav_3/front_camera/image
+    video_names:
+      - uav_1_front_camera.mp4
+      - uav_2_front_camera.mp4
+      - uav_3_front_camera.mp4

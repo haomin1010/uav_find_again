@@ -23,6 +23,7 @@ class UavRuntime:
     slot_angle: float
     status: str = "INIT"
     target: Optional[np.ndarray] = None
+    phase: float = 0.0
 
 
 class UavControl(Node):
@@ -31,13 +32,18 @@ class UavControl(Node):
         self.declare_parameter("dt", 0.1)
         self.declare_parameter("uav_speed", 3.0)
         self.declare_parameter("follow_radius", 9.5)
+        self.declare_parameter("orbit_radius", 1.8)
+        self.declare_parameter("orbit_period", 16.0)
         self.declare_parameter("world_half_size", 30.0)
 
         self.dt = float(self.get_parameter("dt").value)
         self.uav_speed = float(self.get_parameter("uav_speed").value)
         self.follow_radius = float(self.get_parameter("follow_radius").value)
+        self.orbit_radius = float(self.get_parameter("orbit_radius").value)
+        self.orbit_period = float(self.get_parameter("orbit_period").value)
         self.world_half_size = float(self.get_parameter("world_half_size").value)
         first_target = default_target_waypoints()[0]
+        self.start_time = self.get_clock().now()
 
         self.uavs: Dict[str, UavRuntime] = {}
         self.pose_publishers = {}
@@ -49,6 +55,7 @@ class UavControl(Node):
                 pos=pos,
                 yaw=math.atan2(rel[1], rel[0]),
                 slot_angle=init.slot_angle,
+                phase=init.slot_angle,
             )
             self.pose_publishers[uav_id] = self.create_publisher(UavPose2D, f"/{uav_id}/pose2d", 10)
             self.create_subscription(
@@ -60,6 +67,9 @@ class UavControl(Node):
 
         self.create_timer(self.dt, self.on_timer)
 
+    def elapsed_seconds(self) -> float:
+        return (self.get_clock().now() - self.start_time).nanoseconds / 1e9
+
     def on_tracker_state(self, uav_id: str, msg: TrackerState) -> None:
         uav = self.uavs[uav_id]
         uav.status = msg.state
@@ -70,8 +80,9 @@ class UavControl(Node):
         for uav in self.uavs.values():
             if uav.target is not None and uav.status != "FAILED":
                 radius = self.follow_radius * (0.72 if uav.status == "REACQUIRING" else 1.0)
-                offset = np.array([math.cos(uav.slot_angle), math.sin(uav.slot_angle)]) * radius
-                desired = uav.target + offset
+                formation_offset = np.array([math.cos(uav.slot_angle), math.sin(uav.slot_angle)]) * radius
+                orbit_offset = self.compute_orbit_offset(uav)
+                desired = uav.target + formation_offset + orbit_offset
                 delta = desired - uav.pos
                 max_step = self.uav_speed * self.dt
                 uav.pos += unit(delta) * min(max_step, norm(delta))
@@ -84,6 +95,20 @@ class UavControl(Node):
             uav.pos[0] = float(np.clip(uav.pos[0], -self.world_half_size, self.world_half_size))
             uav.pos[1] = float(np.clip(uav.pos[1], -self.world_half_size, self.world_half_size))
             self.publish_pose(uav)
+
+    def compute_orbit_offset(self, uav: UavRuntime) -> np.ndarray:
+        if self.orbit_radius <= 0.0 or self.orbit_period <= 0.0:
+            return np.zeros(2, dtype=float)
+        theta = 2.0 * math.pi * self.elapsed_seconds() / self.orbit_period + uav.phase
+        # Slightly elliptical offset keeps every UAV visibly moving without
+        # destroying the formation geometry.
+        return np.array(
+            [
+                math.cos(theta) * self.orbit_radius,
+                math.sin(theta) * self.orbit_radius * 0.6,
+            ],
+            dtype=float,
+        )
 
     def publish_pose(self, uav: UavRuntime) -> None:
         msg = UavPose2D()
@@ -108,4 +133,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-

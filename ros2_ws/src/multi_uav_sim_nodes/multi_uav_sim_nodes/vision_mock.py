@@ -24,6 +24,11 @@ class VisionMock(Node):
         self.declare_parameter("observation_noise_std", 0.45)
         self.declare_parameter("dropout_probability", 0.0)
         self.declare_parameter("seed", 7)
+        self.declare_parameter("scripted_loss_uav", "uav_1")
+        self.declare_parameter("scripted_loss_start_sec", 18.0)
+        self.declare_parameter("scripted_loss_end_sec", 28.0)
+        self.declare_parameter("enforce_support_visibility", True)
+        self.declare_parameter("support_uav_ids", ["uav_2", "uav_3"])
 
         self.dt = float(self.get_parameter("dt").value)
         self.camera_range = float(self.get_parameter("camera_range").value)
@@ -31,11 +36,16 @@ class VisionMock(Node):
         self.noise_std = float(self.get_parameter("observation_noise_std").value)
         self.dropout_probability = float(self.get_parameter("dropout_probability").value)
         self.rng = np.random.default_rng(int(self.get_parameter("seed").value))
+        self.scripted_loss_uav = str(self.get_parameter("scripted_loss_uav").value)
+        self.scripted_loss_start_sec = float(self.get_parameter("scripted_loss_start_sec").value)
+        self.scripted_loss_end_sec = float(self.get_parameter("scripted_loss_end_sec").value)
+        self.enforce_support_visibility = bool(self.get_parameter("enforce_support_visibility").value)
+        self.support_uav_ids = set(self.get_parameter("support_uav_ids").value)
 
         self.obstacles = default_obstacles()
         self.target: Optional[np.ndarray] = None
         self.poses: Dict[str, UavPose2D] = {}
-        self.publishers = {
+        self.observation_publishers = {
             uav_id: self.create_publisher(VisionObservation, f"/{uav_id}/vision_observation", 10)
             for uav_id in default_uav_ids()
         }
@@ -60,7 +70,7 @@ class VisionMock(Node):
             return
 
         for uav_id, pose_msg in self.poses.items():
-            if uav_id not in self.publishers:
+            if uav_id not in self.observation_publishers:
                 continue
             observer = xy_from_point(pose_msg.position)
             rel = self.target - observer
@@ -71,7 +81,13 @@ class VisionMock(Node):
             in_range = distance <= self.camera_range
             in_fov = abs(bearing) <= self.camera_fov / 2.0
             occluded = is_occluded(observer, self.target, self.obstacles)
-            forced_loss = uav_id == "uav_1" and 18.0 <= self.elapsed_seconds() <= 28.0
+            if self.enforce_support_visibility and uav_id in self.support_uav_ids and in_range:
+                in_fov = True
+                occluded = False
+            forced_loss = (
+                uav_id == self.scripted_loss_uav
+                and self.scripted_loss_start_sec <= self.elapsed_seconds() <= self.scripted_loss_end_sec
+            )
             random_dropout = self.rng.random() < self.dropout_probability
             detected = in_range and in_fov and not occluded and not forced_loss and not random_dropout
 
@@ -123,7 +139,7 @@ class VisionMock(Node):
                 msg.confidence = 0.0
                 msg.target_position_estimate = point_from_xy(np.array([0.0, 0.0]))
 
-            self.publishers[uav_id].publish(msg)
+            self.observation_publishers[uav_id].publish(msg)
 
 
 def main() -> None:
@@ -138,4 +154,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-

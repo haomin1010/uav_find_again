@@ -765,9 +765,6 @@ ros_ign
 conda activate uav_gazebo
 pip uninstall -y \
   numpy \
-  scipy \
-  pandas \
-  PyYAML \
   matplotlib \
   opencv-python \
   opencv-python-headless \
@@ -829,7 +826,7 @@ source /mnt/data2/lhm/uav/find_object_again/ros2_ws/install/setup.bash
 which python
 python -c "import sys; print(sys.executable); print(sys.version)"
 python -c "import rclpy; print('rclpy ok')"
-python -c "import numpy, cv2, matplotlib, pandas, yaml; print('python deps ok')"
+python -c "import numpy, cv2, matplotlib; print('python deps ok')"
 ```
 
 如果 `import rclpy` 失败，先看 ROS2 的 Python 路径是否在 `PYTHONPATH` 中：
@@ -949,7 +946,7 @@ conda activate uav_gazebo
 source /opt/ros/humble/setup.bash
 
 python -c "import rclpy; print('rclpy ok')"
-python -c "import numpy, cv2, matplotlib, pandas, yaml; print('python deps ok')"
+python -c "import numpy, cv2, matplotlib; print('python deps ok')"
 ros2 pkg list | grep -E "ros_gz|ros_ign"
 ign gazebo --versions
 ```
