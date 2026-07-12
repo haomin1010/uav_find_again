@@ -74,6 +74,8 @@ class GazeboPoseSync(Node):
         self.timeout_count = 0
         self.last_status_log = 0.0
         self.status_log_period = 5.0
+        self.previous_target_pose: Pose2D | None = None
+        self.target_yaw = 0.0
 
         self.create_subscription(PointStamped, "/target/ground_truth", self.on_target, 10)
         for uav_id in default_uav_ids():
@@ -94,7 +96,15 @@ class GazeboPoseSync(Node):
         return env
 
     def on_target(self, msg: PointStamped) -> None:
-        self.update_target_pose("target", Pose2D(msg.point.x, msg.point.y, 0.0, 0.0))
+        pose = Pose2D(msg.point.x, msg.point.y, msg.point.z, self.target_yaw)
+        if self.previous_target_pose is not None:
+            dx = pose.x - self.previous_target_pose.x
+            dy = pose.y - self.previous_target_pose.y
+            if math.hypot(dx, dy) > 0.02:
+                self.target_yaw = math.atan2(dy, dx)
+                pose.yaw = self.target_yaw
+        self.previous_target_pose = pose
+        self.update_target_pose("target", pose)
 
     def on_uav_pose(self, msg: UavPose2D) -> None:
         self.update_target_pose(

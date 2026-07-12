@@ -34,6 +34,7 @@ class SimRecorder(Node):
                 "time",
                 "target_x",
                 "target_y",
+                "target_z",
                 "uav_id",
                 "uav_x",
                 "uav_y",
@@ -43,6 +44,7 @@ class SimRecorder(Node):
                 "swarm_valid",
                 "swarm_x",
                 "swarm_y",
+                "swarm_z",
             ]
         )
 
@@ -95,6 +97,7 @@ class SimRecorder(Node):
         swarm_valid = self.swarm.valid if self.swarm is not None else False
         swarm_x = self.swarm.position.x if self.swarm is not None and self.swarm.valid else ""
         swarm_y = self.swarm.position.y if self.swarm is not None and self.swarm.valid else ""
+        swarm_z = self.swarm.position.z if self.swarm is not None and self.swarm.valid else ""
 
         for uav_id, pose in self.poses.items():
             state = self.states.get(uav_id)
@@ -103,6 +106,7 @@ class SimRecorder(Node):
                     f"{self.elapsed_seconds():.3f}",
                     f"{self.target.point.x:.4f}",
                     f"{self.target.point.y:.4f}",
+                    f"{self.target.point.z:.4f}",
                     uav_id,
                     f"{pose.position.x:.4f}",
                     f"{pose.position.y:.4f}",
@@ -112,6 +116,7 @@ class SimRecorder(Node):
                     int(swarm_valid),
                     swarm_x,
                     swarm_y,
+                    swarm_z,
                 ]
             )
         self.tracks_file.flush()
@@ -139,4 +144,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-

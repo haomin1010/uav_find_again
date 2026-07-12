@@ -6,7 +6,7 @@ from geometry_msgs.msg import PointStamped
 from rclpy.node import Node
 
 from .geometry import norm, unit
-from .ros_utils import point_from_xy
+from .ros_utils import point_from_xyz
 from .scenario import default_target_waypoints
 
 
@@ -37,7 +37,7 @@ class TargetManager(Node):
         msg = PointStamped()
         msg.header.stamp = self.get_clock().now().to_msg()
         msg.header.frame_id = "world"
-        msg.point = point_from_xy(self.position)
+        msg.point = point_from_xyz(self.position)
         self.publisher.publish(msg)
 
 
@@ -53,4 +53,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-

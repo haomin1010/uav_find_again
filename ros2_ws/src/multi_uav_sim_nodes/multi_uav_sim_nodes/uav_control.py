@@ -11,7 +11,7 @@ from rclpy.node import Node
 from multi_uav_sim_msgs.msg import TrackerState, UavPose2D
 
 from .geometry import norm, unit, wrap_angle
-from .ros_utils import point_from_xy, xy_from_point
+from .ros_utils import point_from_xy, xy_from_point, xy_from_vec
 from .scenario import default_target_waypoints, default_uavs
 
 
@@ -42,7 +42,7 @@ class UavControl(Node):
         self.orbit_radius = float(self.get_parameter("orbit_radius").value)
         self.orbit_period = float(self.get_parameter("orbit_period").value)
         self.world_half_size = float(self.get_parameter("world_half_size").value)
-        first_target = default_target_waypoints()[0]
+        first_target = xy_from_vec(default_target_waypoints()[0])
         self.start_time = self.get_clock().now()
 
         self.uavs: Dict[str, UavRuntime] = {}

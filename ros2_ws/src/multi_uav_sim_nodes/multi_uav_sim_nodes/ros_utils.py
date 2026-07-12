@@ -12,6 +12,21 @@ def point_from_xy(xy: np.ndarray) -> Point:
     return msg
 
 
+def point_from_xyz(xyz: np.ndarray) -> Point:
+    msg = Point()
+    msg.x = float(xyz[0])
+    msg.y = float(xyz[1])
+    msg.z = float(xyz[2])
+    return msg
+
+
 def xy_from_point(point: Point) -> np.ndarray:
     return np.array([point.x, point.y], dtype=float)
 
+
+def xyz_from_point(point: Point) -> np.ndarray:
+    return np.array([point.x, point.y, point.z], dtype=float)
+
+
+def xy_from_vec(vec: np.ndarray) -> np.ndarray:
+    return np.array([vec[0], vec[1]], dtype=float)

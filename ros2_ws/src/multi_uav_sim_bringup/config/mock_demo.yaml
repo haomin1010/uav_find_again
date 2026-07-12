@@ -1,7 +1,7 @@
 target_manager:
   ros__parameters:
     dt: 0.1
-    target_speed: 1.45
+    target_speed: 1.8
 
 uav_control:
   ros__parameters:
@@ -17,12 +17,14 @@ vision_mock:
     dt: 0.1
     camera_range: 45.0
     camera_fov_deg: 105.0
+    camera_vertical_fov_deg: 60.0
+    uav_altitude: 8.0
     observation_noise_std: 0.45
     dropout_probability: 0.0
     seed: 7
     scripted_loss_uav: uav_1
-    scripted_loss_start_sec: 18.0
-    scripted_loss_end_sec: 28.0
+    scripted_loss_start_sec: 17.0
+    scripted_loss_end_sec: 27.0
     enforce_support_visibility: true
     support_uav_ids:
       - uav_2

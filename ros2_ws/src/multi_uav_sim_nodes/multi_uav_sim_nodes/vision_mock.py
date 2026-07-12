@@ -11,7 +11,7 @@ from rclpy.node import Node
 from multi_uav_sim_msgs.msg import UavPose2D, VisionObservation
 
 from .geometry import is_occluded, norm, wrap_angle
-from .ros_utils import point_from_xy, xy_from_point
+from .ros_utils import point_from_xyz, xy_from_point, xyz_from_point
 from .scenario import default_obstacles, default_uav_ids
 
 
@@ -21,6 +21,8 @@ class VisionMock(Node):
         self.declare_parameter("dt", 0.1)
         self.declare_parameter("camera_range", 34.0)
         self.declare_parameter("camera_fov_deg", 78.0)
+        self.declare_parameter("camera_vertical_fov_deg", 55.0)
+        self.declare_parameter("uav_altitude", 8.0)
         self.declare_parameter("observation_noise_std", 0.45)
         self.declare_parameter("dropout_probability", 0.0)
         self.declare_parameter("seed", 7)
@@ -33,6 +35,8 @@ class VisionMock(Node):
         self.dt = float(self.get_parameter("dt").value)
         self.camera_range = float(self.get_parameter("camera_range").value)
         self.camera_fov = math.radians(float(self.get_parameter("camera_fov_deg").value))
+        self.camera_vertical_fov = math.radians(float(self.get_parameter("camera_vertical_fov_deg").value))
+        self.uav_altitude = float(self.get_parameter("uav_altitude").value)
         self.noise_std = float(self.get_parameter("observation_noise_std").value)
         self.dropout_probability = float(self.get_parameter("dropout_probability").value)
         self.rng = np.random.default_rng(int(self.get_parameter("seed").value))
@@ -57,7 +61,7 @@ class VisionMock(Node):
         self.create_timer(self.dt, self.on_timer)
 
     def on_target(self, msg: PointStamped) -> None:
-        self.target = xy_from_point(msg.point)
+        self.target = xyz_from_point(msg.point)
 
     def on_pose(self, msg: UavPose2D) -> None:
         self.poses[msg.uav_id] = msg
@@ -72,15 +76,21 @@ class VisionMock(Node):
         for uav_id, pose_msg in self.poses.items():
             if uav_id not in self.observation_publishers:
                 continue
-            observer = xy_from_point(pose_msg.position)
+            observer_xy = xy_from_point(pose_msg.position)
+            observer = np.array([observer_xy[0], observer_xy[1], self.uav_altitude], dtype=float)
             rel = self.target - observer
+            horizontal_rel = rel[:2]
+            horizontal_distance = norm(horizontal_rel)
             distance = norm(rel)
-            bearing_world = math.atan2(rel[1], rel[0])
+            bearing_world = math.atan2(horizontal_rel[1], horizontal_rel[0])
             bearing = wrap_angle(bearing_world - pose_msg.yaw)
+            elevation = math.atan2(rel[2], max(horizontal_distance, 1e-6))
 
             in_range = distance <= self.camera_range
-            in_fov = abs(bearing) <= self.camera_fov / 2.0
-            occluded = is_occluded(observer, self.target, self.obstacles)
+            in_horizontal_fov = abs(bearing) <= self.camera_fov / 2.0
+            in_vertical_fov = abs(elevation) <= self.camera_vertical_fov / 2.0
+            in_fov = in_horizontal_fov and in_vertical_fov
+            occluded = is_occluded(observer_xy, self.target[:2], self.obstacles)
             if self.enforce_support_visibility and uav_id in self.support_uav_ids and in_range:
                 in_fov = True
                 occluded = False
@@ -110,7 +120,7 @@ class VisionMock(Node):
             msg.observer_position = pose_msg.position
             msg.observer_yaw = float(pose_msg.yaw)
             msg.bearing = float(bearing)
-            msg.elevation = 0.0
+            msg.elevation = float(elevation)
             msg.range_estimate = float(distance)
             msg.target_position_covariance = [0.0] * 9
 
@@ -118,8 +128,8 @@ class VisionMock(Node):
                 range_score = max(0.0, 1.0 - distance / (self.camera_range * 1.2))
                 center_score = max(0.0, 1.0 - abs(bearing) / (self.camera_fov / 2.0))
                 msg.confidence = float(np.clip(0.55 + 0.25 * range_score + 0.2 * center_score, 0.0, 0.99))
-                estimate = self.target + self.rng.normal(0.0, self.noise_std, size=2)
-                msg.target_position_estimate = point_from_xy(estimate)
+                estimate = self.target + self.rng.normal(0.0, self.noise_std, size=3)
+                msg.target_position_estimate = point_from_xyz(estimate)
                 msg.target_position_covariance = [
                     self.noise_std**2,
                     0.0,
@@ -131,13 +141,15 @@ class VisionMock(Node):
                     0.0,
                     0.0,
                 ]
-                msg.bbox_cx = float(0.5 + 0.5 * bearing / (self.camera_fov / 2.0))
-                msg.bbox_cy = 0.5
+                msg.bbox_cx = float(np.clip(0.5 + 0.5 * bearing / (self.camera_fov / 2.0), 0.0, 1.0))
+                msg.bbox_cy = float(
+                    np.clip(0.5 - 0.5 * elevation / (self.camera_vertical_fov / 2.0), 0.0, 1.0)
+                )
                 msg.bbox_w = float(np.clip(0.5 / max(distance, 1.0), 0.02, 0.25))
                 msg.bbox_h = msg.bbox_w * 1.4
             else:
                 msg.confidence = 0.0
-                msg.target_position_estimate = point_from_xy(np.array([0.0, 0.0]))
+                msg.target_position_estimate = point_from_xyz(np.array([0.0, 0.0, 0.0]))
 
             self.observation_publishers[uav_id].publish(msg)
 

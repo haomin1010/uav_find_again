@@ -49,39 +49,201 @@
     <include>
       <name>uav_1</name>
       <uri>model://simple_uav</uri>
-      <pose>-22 -11 8 0 0 0.46</pose>
+      <pose>-24 -12 8 0 0 0.24</pose>
     </include>
     <include>
       <name>uav_2</name>
       <uri>model://simple_uav</uri>
-      <pose>-14 -18 8 0 0 1.57</pose>
+      <pose>-16 -18 8 0 0 1.57</pose>
     </include>
     <include>
       <name>uav_3</name>
       <uri>model://simple_uav</uri>
-      <pose>-5 -9 8 0 0 0.24</pose>
+      <pose>-7 -11 8 0 0 0.12</pose>
     </include>
 
     <include>
       <name>target</name>
       <uri>model://target_marker</uri>
-      <pose>-14 -7 0 0 0 0</pose>
+      <pose>-16 -10 7 0 0 0</pose>
     </include>
 
     <include>
-      <name>scripted_occluder</name>
+      <name>central_wall</name>
       <uri>model://occlusion_wall</uri>
-      <pose>0 23 1.5 0 0 0</pose>
+      <pose>9.5 5.25 4.5 0 0 0.58</pose>
     </include>
-    <include>
-      <name>pillar_a</name>
-      <uri>model://occlusion_wall</uri>
-      <pose>-22.5 18.5 1.5 0 0 1.5708</pose>
-    </include>
-    <include>
-      <name>pillar_b</name>
-      <uri>model://occlusion_wall</uri>
-      <pose>22.5 -20.5 1.5 0 0 1.5708</pose>
-    </include>
+
+    <model name="pipe_gate">
+      <static>true</static>
+      <link name="gate_link">
+        <visual name="left_column">
+          <pose>9.0 10.6 4.0 0 0 0</pose>
+          <geometry>
+            <box>
+              <size>0.7 0.7 8.0</size>
+            </box>
+          </geometry>
+          <material>
+            <ambient>0.38 0.39 0.39 1</ambient>
+            <diffuse>0.38 0.39 0.39 1</diffuse>
+          </material>
+        </visual>
+        <visual name="right_column">
+          <pose>16.0 10.2 4.0 0 0 0</pose>
+          <geometry>
+            <box>
+              <size>0.7 0.7 8.0</size>
+            </box>
+          </geometry>
+          <material>
+            <ambient>0.38 0.39 0.39 1</ambient>
+            <diffuse>0.38 0.39 0.39 1</diffuse>
+          </material>
+        </visual>
+        <visual name="top_pipe">
+          <pose>12.5 10.4 8.25 0 1.5708 0</pose>
+          <geometry>
+            <cylinder>
+              <radius>0.22</radius>
+              <length>7.2</length>
+            </cylinder>
+          </geometry>
+          <material>
+            <ambient>0.9 0.62 0.14 1</ambient>
+            <diffuse>0.9 0.62 0.14 1</diffuse>
+          </material>
+        </visual>
+        <collision name="left_column_collision">
+          <pose>9.0 10.6 4.0 0 0 0</pose>
+          <geometry>
+            <box>
+              <size>0.7 0.7 8.0</size>
+            </box>
+          </geometry>
+        </collision>
+        <collision name="right_column_collision">
+          <pose>16.0 10.2 4.0 0 0 0</pose>
+          <geometry>
+            <box>
+              <size>0.7 0.7 8.0</size>
+            </box>
+          </geometry>
+        </collision>
+      </link>
+    </model>
+
+    <model name="tower_cluster">
+      <static>true</static>
+      <link name="tower_link">
+        <visual name="tower_a">
+          <pose>2.0 12.0 5.0 0 0 0</pose>
+          <geometry>
+            <cylinder>
+              <radius>0.45</radius>
+              <length>10.0</length>
+            </cylinder>
+          </geometry>
+          <material>
+            <ambient>0.28 0.31 0.34 1</ambient>
+            <diffuse>0.28 0.31 0.34 1</diffuse>
+          </material>
+        </visual>
+        <visual name="tower_b">
+          <pose>4.0 14.0 4.0 0 0 0</pose>
+          <geometry>
+            <cylinder>
+              <radius>0.35</radius>
+              <length>8.0</length>
+            </cylinder>
+          </geometry>
+          <material>
+            <ambient>0.28 0.31 0.34 1</ambient>
+            <diffuse>0.28 0.31 0.34 1</diffuse>
+          </material>
+        </visual>
+        <visual name="tower_c">
+          <pose>1.0 15.0 3.3 0 0 0</pose>
+          <geometry>
+            <cylinder>
+              <radius>0.32</radius>
+              <length>6.6</length>
+            </cylinder>
+          </geometry>
+          <material>
+            <ambient>0.45 0.48 0.49 1</ambient>
+            <diffuse>0.45 0.48 0.49 1</diffuse>
+          </material>
+        </visual>
+      </link>
+    </model>
+
+    <model name="factory_block">
+      <static>true</static>
+      <link name="factory_link">
+        <visual name="main_block">
+          <pose>0 4.5 2.4 0 0 0</pose>
+          <geometry>
+            <box>
+              <size>4.0 5.0 4.8</size>
+            </box>
+          </geometry>
+          <material>
+            <ambient>0.34 0.36 0.33 1</ambient>
+            <diffuse>0.34 0.36 0.33 1</diffuse>
+          </material>
+        </visual>
+        <visual name="roof_band">
+          <pose>0 4.5 4.95 0 0 0</pose>
+          <geometry>
+            <box>
+              <size>4.3 5.3 0.25</size>
+            </box>
+          </geometry>
+          <material>
+            <ambient>0.16 0.17 0.16 1</ambient>
+            <diffuse>0.16 0.17 0.16 1</diffuse>
+          </material>
+        </visual>
+        <collision name="main_collision">
+          <pose>0 4.5 2.4 0 0 0</pose>
+          <geometry>
+            <box>
+              <size>4.0 5.0 4.8</size>
+            </box>
+          </geometry>
+        </collision>
+      </link>
+    </model>
+
+    <model name="safety_barriers">
+      <static>true</static>
+      <link name="barrier_link">
+        <visual name="barrier_a">
+          <pose>7.0 -1.0 0.35 0 0 0.3</pose>
+          <geometry>
+            <box>
+              <size>7.0 0.18 0.7</size>
+            </box>
+          </geometry>
+          <material>
+            <ambient>0.95 0.74 0.12 1</ambient>
+            <diffuse>0.95 0.74 0.12 1</diffuse>
+          </material>
+        </visual>
+        <visual name="barrier_b">
+          <pose>16.0 3.0 0.35 0 0 1.2</pose>
+          <geometry>
+            <box>
+              <size>5.0 0.18 0.7</size>
+            </box>
+          </geometry>
+          <material>
+            <ambient>0.95 0.74 0.12 1</ambient>
+            <diffuse>0.95 0.74 0.12 1</diffuse>
+          </material>
+        </visual>
+      </link>
+    </model>
   </world>
 </sdf>
