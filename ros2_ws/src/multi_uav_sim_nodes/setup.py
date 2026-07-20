@@ -26,6 +26,7 @@ setup(
             "sim_recorder = multi_uav_sim_nodes.sim_recorder:main",
             "gazebo_pose_sync = multi_uav_sim_nodes.gazebo_pose_sync:main",
             "image_video_recorder = multi_uav_sim_nodes.image_video_recorder:main",
+            "sitl_offboard_adapter = multi_uav_sim_nodes.sitl_offboard_adapter:main",
         ],
     },
 )

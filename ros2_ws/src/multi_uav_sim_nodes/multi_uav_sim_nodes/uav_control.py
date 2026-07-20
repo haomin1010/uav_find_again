@@ -35,6 +35,7 @@ class UavControl(Node):
         self.declare_parameter("orbit_radius", 1.8)
         self.declare_parameter("orbit_period", 16.0)
         self.declare_parameter("world_half_size", 30.0)
+        self.declare_parameter("pose_topic_suffix", "pose2d")
 
         self.dt = float(self.get_parameter("dt").value)
         self.uav_speed = float(self.get_parameter("uav_speed").value)
@@ -42,6 +43,7 @@ class UavControl(Node):
         self.orbit_radius = float(self.get_parameter("orbit_radius").value)
         self.orbit_period = float(self.get_parameter("orbit_period").value)
         self.world_half_size = float(self.get_parameter("world_half_size").value)
+        self.pose_topic_suffix = str(self.get_parameter("pose_topic_suffix").value).strip("/")
         first_target = xy_from_vec(default_target_waypoints()[0])
         self.start_time = self.get_clock().now()
 
@@ -57,7 +59,9 @@ class UavControl(Node):
                 slot_angle=init.slot_angle,
                 phase=init.slot_angle,
             )
-            self.pose_publishers[uav_id] = self.create_publisher(UavPose2D, f"/{uav_id}/pose2d", 10)
+            self.pose_publishers[uav_id] = self.create_publisher(
+                UavPose2D, f"/{uav_id}/{self.pose_topic_suffix}", 10
+            )
             self.create_subscription(
                 TrackerState,
                 f"/{uav_id}/tracker_state",

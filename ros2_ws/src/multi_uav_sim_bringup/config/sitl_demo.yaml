@@ -1,0 +1,93 @@
+target_manager:
+  ros__parameters:
+    dt: 0.1
+    target_speed: 1.6
+    output_topic: /target/desired_position
+
+uav_control:
+  ros__parameters:
+    dt: 0.1
+    uav_speed: 2.0
+    follow_radius: 9.5
+    orbit_radius: 1.2
+    orbit_period: 18.0
+    world_half_size: 30.0
+    pose_topic_suffix: desired_pose2d
+
+sitl_offboard_adapter:
+  ros__parameters:
+    uav_ids:
+      - uav_1
+      - uav_2
+      - uav_3
+    px4_namespaces:
+      - px4_1
+      - px4_2
+      - px4_3
+    target_system_ids:
+      - 1
+      - 2
+      - 3
+    command_rate_hz: 20.0
+    hold_altitude_m: 8.0
+    target_hold_altitude_m: 7.0
+    max_xy_speed_mps: 2.5
+    target_max_xy_speed_mps: 1.8
+    max_z_speed_mps: 1.0
+    max_yaw_rate_dps: 60.0
+    warmup_sec: 1.0
+    command_retry_period_sec: 2.0
+    auto_arm: true
+    auto_offboard: true
+    target_enabled: true
+    target_px4_namespace: px4_4
+    target_system_id: 4
+    desired_pose_suffix: desired_pose2d
+    feedback_pose_suffix: pose2d
+    target_desired_topic: /target/desired_position
+    target_feedback_topic: /target/ground_truth
+
+vision_mock:
+  ros__parameters:
+    dt: 0.1
+    camera_range: 45.0
+    camera_fov_deg: 105.0
+    camera_vertical_fov_deg: 60.0
+    uav_altitude: 8.0
+    observation_noise_std: 0.45
+    dropout_probability: 0.0
+    seed: 7
+    scripted_loss_uav: uav_1
+    scripted_loss_start_sec: 17.0
+    scripted_loss_end_sec: 27.0
+    enforce_support_visibility: true
+    support_uav_ids:
+      - uav_2
+      - uav_3
+
+coop_tracker:
+  ros__parameters:
+    dt: 0.1
+    lost_frame_threshold: 8
+    recovered_frame_threshold: 6
+    observation_timeout_sec: 0.7
+    max_recovery_time_sec: 18.0
+
+sim_recorder:
+  ros__parameters:
+    dt: 0.1
+    output_dir: runs_ros2
+
+image_video_recorder:
+  ros__parameters:
+    output_dir: runs_ros2
+    run_name: px4_sitl_camera_record
+    fps: 20.0
+    image_topics:
+      - /uav_1/front_camera/image
+      - /uav_2/front_camera/image
+      - /uav_3/front_camera/image
+    video_names:
+      - uav_1_front_camera.mp4
+      - uav_2_front_camera.mp4
+      - uav_3_front_camera.mp4

@@ -15,13 +15,16 @@ class TargetManager(Node):
         super().__init__("target_manager")
         self.declare_parameter("dt", 0.1)
         self.declare_parameter("target_speed", 1.45)
+        self.declare_parameter("output_topic", "/target/ground_truth")
 
         self.dt = float(self.get_parameter("dt").value)
         self.target_speed = float(self.get_parameter("target_speed").value)
+        self.output_topic = str(self.get_parameter("output_topic").value)
         self.waypoints = default_target_waypoints()
         self.position = self.waypoints[0].copy()
         self.waypoint_index = 1
-        self.publisher = self.create_publisher(PointStamped, "/target/ground_truth", 10)
+        self.publisher = self.create_publisher(PointStamped, self.output_topic, 10)
+        self.get_logger().info(f"publishing target waypoints on {self.output_topic}")
         self.create_timer(self.dt, self.on_timer)
 
     def on_timer(self) -> None:
